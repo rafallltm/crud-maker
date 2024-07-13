@@ -1,74 +1,88 @@
 import sqlite3
 
-# Conectar ao banco de dados SQLite ou criar um novo se não existir
-conn = sqlite3.connect("tarefas.db")
-cursor = conn.cursor()
+# Função para conectar ao banco de dados SQLite
+def conectar_bd():
+    return sqlite3.connect("tarefas.db")
 
-# Criar a tabela de tarefas se ainda não existir
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS tarefas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        descricao TEXT,
-        concluida INTEGER
-    )
-''')
+# Função para criar a tabela de tarefas se ainda não existir
+def criar_tabela(cursor):
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tarefas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            descricao TEXT,
+            concluida INTEGER
+        )
+    ''')
 
 # Função para criar uma nova tarefa
-def criar_tarefa(descricao):
+def criar_tarefa(cursor, descricao):
     cursor.execute("INSERT INTO tarefas (descricao, concluida) VALUES (?, 0)", (descricao,))
-    conn.commit()
 
 # Função para ler todas as tarefas
-def ler_tarefas():
+def ler_tarefas(cursor):
     cursor.execute("SELECT * FROM tarefas")
     return cursor.fetchall()
 
 # Função para atualizar uma tarefa
-def atualizar_tarefa(id, concluida):
+def atualizar_tarefa(cursor, id, concluida):
     cursor.execute("UPDATE tarefas SET concluida = ? WHERE id = ?", (concluida, id))
-    conn.commit()
 
 # Função para excluir uma tarefa
-def excluir_tarefa(id):
+def excluir_tarefa(cursor, id):
     cursor.execute("DELETE FROM tarefas WHERE id = ?", (id,))
-    conn.commit()
 
-# Menu principal
-while True:
-    print("\nAplicativo de Gerenciamento de Tarefas")
-    print("1. Criar Tarefa")
-    print("2. Listar Tarefas")
-    print("3. Marcar Tarefa como Concluída")
-    print("4. Excluir Tarefa")
-    print("5. Sair")
+# Função principal
+def main():
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    criar_tabela(cursor)
 
-    escolha = input("Escolha uma opção: ")
+    while True:
+        print("\nAplicativo de Gerenciamento de Tarefas")
+        print("1. Criar Tarefa")
+        print("2. Listar Tarefas")
+        print("3. Marcar Tarefa como Concluída")
+        print("4. Excluir Tarefa")
+        print("5. Sair")
 
-    if escolha == "1":
-        descricao = input("Digite a descrição da tarefa: ")
-        criar_tarefa(descricao)
-        print("Tarefa criada com sucesso!")
+        escolha = input("Escolha uma opção: ")
 
-    elif escolha == "2":
-        tarefas = ler_tarefas()
-        print("\nLista de Tarefas:")
-        for tarefa in tarefas:
-            status = "Concluída" if tarefa[2] else "Pendente"
-            print(f"{tarefa[0]}. {tarefa[1]} - {status}")
+        try:
+            if escolha == "1":
+                descricao = input("Digite a descrição da tarefa: ")
+                criar_tarefa(cursor, descricao)
+                conn.commit()
+                print("Tarefa criada com sucesso!")
 
-    elif escolha == "3":
-        id = int(input("Digite o ID da tarefa a ser marcada como concluída: "))
-        atualizar_tarefa(id, 1)
-        print("Tarefa marcada como concluída!")
+            elif escolha == "2":
+                tarefas = ler_tarefas(cursor)
+                print("\nLista de Tarefas:")
+                for tarefa in tarefas:
+                    status = "Concluída" if tarefa[2] else "Pendente"
+                    print(f"{tarefa[0]}. {tarefa[1]} - {status}")
 
-    elif escolha == "4":
-        id = int(input("Digite o ID da tarefa a ser excluída: "))
-        excluir_tarefa(id)
-        print("Tarefa excluída com sucesso!")
+            elif escolha == "3":
+                id = int(input("Digite o ID da tarefa a ser marcada como concluída: "))
+                atualizar_tarefa(cursor, id, 1)
+                conn.commit()
+                print("Tarefa marcada como concluída!")
 
-    elif escolha == "5":
-        print("Saindo do aplicativo.")
-        break
+            elif escolha == "4":
+                id = int(input("Digite o ID da tarefa a ser excluída: "))
+                excluir_tarefa(cursor, id)
+                conn.commit()
+                print("Tarefa excluída com sucesso!")
 
-    else:
-        print("Opção inválida. Tente novamente.")
+            elif escolha == "5":
+                print("Saindo do aplicativo.")
+                break
+
+            else:
+                print("Opção inválida. Tente novamente.")
+        except Exception as e:
+            print(f"Ocorreu um erro: {e}")
+
+    conn.close()
+
+if __name__ == "__main__":
+    main()
