@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas - Debian Style</title>
+    <style>
+        /* Reset básico de margens e paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #FFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #A80030; /* Cor característica do Debian */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #CCC;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-button {
+            background-color: #A80030;
+            color: #FFF;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .form-button:hover {
+            background-color: #900024;
+        }
+
+        .tarefa-lista {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .tarefa-item {
+            background-color: #f9f9f9;
+            border: 1px solid #e1e1e1;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .tarefa-item span {
+            font-size: 1.1rem;
+        }
+
+        .tarefa-item a {
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .tarefa-item a.button {
+            background-color: #007b5e;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .tarefa-item a.button:hover {
+            background-color: #005a3d;
+        }
+
+        .status-pendente {
+            color: #E0A800;
+        }
+
+        .status-concluida {
+            color: #28A745;
+        }
+
+        .status-pendente, .status-concluida {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Tarefas - Debian Style</h1>
+        
+        <!-- Formulário para adicionar tarefa -->
+        <form action="/adicionar" method="POST">
+            <input type="text" name="descricao" class="form-input" placeholder="Nova Tarefa" required>
+            <button type="submit" class="form-button">Adicionar Tarefa</button>
+        </form>
+
+        <h2>Lista de Tarefas</h2>
+        <ul class="tarefa-lista">
+            {% for tarefa in tarefas %}
+            <li class="tarefa-item">
+                <span>{{ tarefa[1] }} - 
+                {% if tarefa[2] == 0 %}
+                    <span class="status-pendente">Pendente</span>
+                {% else %}
+                    <span class="status-concluida">Concluída</span>
+                {% endif %}
+                </span>
+                
+                {% if tarefa[2] == 0 %}
+                <a href="/concluir/{{ tarefa[0] }}" class="button">Marcar como Concluída</a>
+                {% endif %}
+                
+                <a href="/excluir/{{ tarefa[0] }}" class="button">Excluir</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
