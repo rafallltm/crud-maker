@@ -1,0 +1,41 @@
+# Ambiente virtual
+venv/
+.env/
+
+# Arquivos de cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de log
+*.log
+
+# Configurações do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de IDEs
+.idea/
+.vscode/
+
+# Arquivos temporários e backups
+*.swp
+*.swo
+*.bak
+*.tmp
+*.~*
+
+# Dependências instaladas (não precisa versionar)
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Arquivo de configuração de teste
+test_output/
+coverage/
+.tox/
+
+# Outras pastas ou arquivos gerados automaticamente
+build/
+dist/
+*.egg-info/
+tarefas.db
